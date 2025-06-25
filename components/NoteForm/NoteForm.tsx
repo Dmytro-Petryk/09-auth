@@ -1,20 +1,21 @@
-"use client";
-import { useState } from "react";
-import css from "./NoteForm.module.css";
+'use client';
+import { useState } from 'react';
+import css from './NoteForm.module.css';
 
 type Props = {
   onSubmit: (title: string, content: string) => void;
+  onClose: () => void;
 };
 
-export default function NoteForm({ onSubmit }: Props) {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+export default function NoteForm({ onSubmit, onClose }: Props) {
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(title, content);
-    setTitle("");
-    setContent("");
+    setTitle('');
+    setContent('');
   };
 
   return (
@@ -33,6 +34,9 @@ export default function NoteForm({ onSubmit }: Props) {
         required
       />
       <button type="submit">Add Note</button>
+      <button type="button" onClick={onClose}>
+        Close
+      </button>
     </form>
   );
 }

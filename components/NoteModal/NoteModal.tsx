@@ -33,7 +33,7 @@ const NoteModal = ({ onClose }: NoteModalProps) => {
       onClick={handleBackdropClick}
     >
       <div className={css.modal}>
-        <NoteForm onClose={onClose} />
+        <NoteForm onSubmit={() => {}} onClose={onClose} />
       </div>
     </div>,
     document.body
