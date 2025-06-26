@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { useQuery } from '@tanstack/react-query';
 import { Note } from '@/types/note';
 
 const BASE_URL = 'https://notehub-public.goit.study/api/notes';
@@ -11,30 +10,37 @@ const axiosInstance = axios.create({
   },
 });
 
-export const fetchNotes = async (): Promise<Note[]> => {
-  const { data } = await axiosInstance.get('?page=1&perPage=100');
+interface NotesResponse {
+  data: Note[];
+  totalPages: number;
+}
+
+export const fetchNotes = async (
+  page = 1,
+  perPage = 10,
+  search = ''
+): Promise<NotesResponse> => {
+  const { data } = await axiosInstance.get<NotesResponse>(
+    `?page=${page}&perPage=${perPage}&search=${search}`
+  );
   return data;
 };
 
-export const fetchNoteById = async (id: number): Promise<Note> => {
-  const { data } = await axiosInstance.get(`/${id}`);
+export const fetchNoteById = async (id: string): Promise<Note> => {
+  const { data } = await axiosInstance.get<Note>(`/${id}`);
   return data;
 };
-
-export const useNotesQuery = () =>
-  useQuery({ queryKey: ['notes'], queryFn: fetchNotes });
-
-export const useNoteByIdQuery = (id: number) =>
-  useQuery({ queryKey: ['note', id], queryFn: () => fetchNoteById(id) });
 
 export const createNote = async (
   title: string,
-  content: string
+  content: string,
+  tag: string
 ): Promise<Note> => {
-  const { data } = await axiosInstance.post('/', { title, content });
+  const { data } = await axiosInstance.post<Note>('/', { title, content, tag });
   return data;
 };
 
-export const deleteNote = async (id: number): Promise<void> => {
-  await axiosInstance.delete(`/${id}`);
+export const deleteNote = async (id: string): Promise<Note> => {
+  const { data } = await axiosInstance.delete<Note>(`/${id}`);
+  return data;
 };

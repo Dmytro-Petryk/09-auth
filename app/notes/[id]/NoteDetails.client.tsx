@@ -1,6 +1,7 @@
 'use client';
 import { useParams } from 'next/navigation';
-import { useNoteByIdQuery } from '@/lib/api';
+import { useQuery } from '@tanstack/react-query';
+import { fetchNoteById } from '@/lib/api';
 import css from './NoteDetails.module.css';
 
 export default function NoteDetailsClient() {
@@ -14,7 +15,10 @@ export default function NoteDetailsClient() {
   }
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { data, isLoading, error } = useNoteByIdQuery(noteId);
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['note', String(noteId)],
+    queryFn: () => fetchNoteById(String(noteId)),
+  });
 
   if (isLoading) return <p>Loading, please wait...</p>;
   if (error || !data) return <p>Something went wrong.</p>;
