@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Note } from '@/types/note';
 
-const BASE_URL = 'https://notehub-public.goit.study/api/notes';
+const BASE_URL = 'https://notehub-public.goit.study';
 const TOKEN = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -21,7 +21,7 @@ export const fetchNotes = async (
   search = ''
 ): Promise<NotesResponse> => {
   const { data } = await axiosInstance.get<NotesResponse>(
-    `?page=${page}&perPage=${perPage}&search=${search}`
+    `/api/notes?page=${page}&perPage=${perPage}&search=${encodeURIComponent(search)}`
   );
   return data;
 };

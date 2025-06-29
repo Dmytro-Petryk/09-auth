@@ -2,6 +2,11 @@ import NotesClient from './Notes.client';
 import { fetchNotes } from '@/lib/api';
 
 export default async function NotesPage() {
-  const { data: notes } = await fetchNotes(1, 100);
-  return <NotesClient notes={notes} />;
+  try {
+    const { data: notes } = await fetchNotes(1, 100, '');
+    return <NotesClient notes={notes} />;
+  } catch (error) {
+    console.error('Failed to fetch notes:', error);
+    return <div>Unable to load notes.</div>;
+  }
 }

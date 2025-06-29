@@ -5,13 +5,11 @@ import {
   QueryClient,
 } from '@tanstack/react-query';
 import NoteDetailsClient from './NoteDetails.client';
-
-export default async function NoteDetailsPage({
-  params,
-}: {
-  params: { id: string | string[] };
-}) {
-  const id = Array.isArray(params.id) ? params.id[0] : params.id;
+interface NoteDetails {
+  params: Promise<{ id: string }>;
+};
+export default async function NoteDetails({ params }: NoteDetails) {
+  const id = Array.isArray((await params).id) ? (await params).id[0] : (await params).id;
 
   const queryClient = new QueryClient();
   await queryClient.prefetchQuery({
