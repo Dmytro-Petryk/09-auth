@@ -43,7 +43,10 @@ export default function NotesClient({ notes }: NotesClientProps) {
   const { data, isLoading, error } = useQuery<NotesResponse, Error>({
     queryKey: ['notes', page, debouncedSearch],
     queryFn: () => fetchNotes(page, 10, debouncedSearch),
-    placeholderData: { data: notes, totalPages: 1 },
+    placeholderData: {
+      data: notes,
+      totalPages: 1,
+    },
   });
 
   const handleSearchChange = (value: string) => {
@@ -60,12 +63,16 @@ export default function NotesClient({ notes }: NotesClientProps) {
       {error && <p>Something went wrong.</p>}
       {!isLoading && !error && (
         <>
-          <NoteList notes={data?.data || []} />
-          <Pagination
-            currentPage={page}
-            totalPages={data?.totalPages || 1}
-            onPageChange={setPage}
-          />
+          {Array.isArray(data?.data) && data.data.length > 0 && (
+            <NoteList notes={data.data} />
+          )}
+          {(data?.totalPages ?? 0) > 1 && (
+            <Pagination
+              currentPage={page}
+              totalPages={data?.totalPages ?? 1}
+              onPageChange={setPage}
+            />
+          )}
         </>
       )}
     </>

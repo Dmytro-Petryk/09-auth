@@ -26,21 +26,23 @@ export const fetchNotes = async (
   return data;
 };
 
-export const fetchNoteById = async (id: string): Promise<Note> => {
-  const { data } = await axiosInstance.get<Note>(`/${id}`);
+export const fetchNoteById = async (id: number): Promise<Note> => {
+  const { data } = await axiosInstance.get<Note>(`/api/notes/${id}`);
   return data;
 };
 
-export const createNote = async (
-  title: string,
-  content: string,
-  tag: string
-): Promise<Note> => {
-  const { data } = await axiosInstance.post<Note>('/', { title, content, tag });
+interface CreateNotePayload {
+  title: string;
+  content: string;
+  tag: string;
+}
+
+export const createNote = async (note: CreateNotePayload): Promise<Note> => {
+  const { data } = await axiosInstance.post<Note>('/api/notes', note);
   return data;
 };
 
 export const deleteNote = async (id: string): Promise<Note> => {
-  const { data } = await axiosInstance.delete<Note>(`/${id}`);
+  const { data } = await axiosInstance.delete<Note>(`/api/notes/${id}`);
   return data;
 };
