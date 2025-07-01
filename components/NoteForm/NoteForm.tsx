@@ -5,14 +5,19 @@ import * as Yup from 'yup';
 import { createNote } from '@/lib/api';
 import css from './NoteForm.module.css';
 
-type NoteFormProps = {
+interface NoteFormProps {
   onClose: () => void;
-};
+}
 
 const validationSchema = Yup.object({
-  title: Yup.string().required('Title is required'),
-  content: Yup.string(),
-  tag: Yup.string().required('Tag is required'),
+  title: Yup.string()
+    .min(3, 'Title must be at least 3 characters')
+    .max(50, 'Title must be at most 50 characters')
+    .required('Title is required'),
+  content: Yup.string().max(500, 'Content must be at most 500 characters'),
+  tag: Yup.string()
+    .oneOf(['Todo', 'Work', 'Personal', 'Meeting', 'Shopping'], 'Invalid tag')
+    .required('Tag is required'),
 });
 
 export default function NoteForm({ onClose }: NoteFormProps) {
@@ -52,15 +57,17 @@ export default function NoteForm({ onClose }: NoteFormProps) {
           Tag
           <Field as="select" name="tag">
             <option value="">Select tag</option>
-            <option value="work">Work</option>
-            <option value="personal">Personal</option>
-            <option value="other">Other</option>
+            <option value="Todo">Todo</option>
+            <option value="Work">Work</option>
+            <option value="Personal">Personal</option>
+            <option value="Meeting">Meeting</option>
+            <option value="Shopping">Shopping</option>
           </Field>
           <ErrorMessage name="tag" component="div" className={css.error} />
         </label>
 
         <button type="submit" disabled={mutation.isPending}>
-          Add Note
+          Create note
         </button>
         <button type="button" onClick={onClose}>
           Cancel

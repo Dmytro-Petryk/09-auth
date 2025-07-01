@@ -24,11 +24,6 @@ export function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue;
 }
 
-interface NotesResponse {
-  data: Note[];
-  totalPages: number;
-}
-
 interface NotesClientProps {
   notes: Note[];
 }
@@ -40,13 +35,13 @@ export default function NotesClient({ notes }: NotesClientProps) {
 
   const debouncedSearch = useDebounce(search, 300);
 
-  const { data, isLoading, error } = useQuery<NotesResponse, Error>({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['notes', page, debouncedSearch],
     queryFn: () => fetchNotes(page, 10, debouncedSearch),
-    placeholderData: {
+    initialData: () => ({
       data: notes,
       totalPages: 1,
-    },
+    }),
   });
 
   const handleSearchChange = (value: string) => {
