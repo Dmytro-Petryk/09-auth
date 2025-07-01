@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import axios from 'axios';
 import { Note } from '@/types/note';
 
@@ -12,7 +13,6 @@ const axiosInstance = axios.create({
 interface FetchParams {
   search?: string;
   page?: number;
-  perPage?: number;
 }
 interface NotesResponse {
   data: Note[];
@@ -28,7 +28,6 @@ export const fetchNotes = async (
     const params: FetchParams = {
       ...(search.trim() !== '' && { search: search.trim() }),
       page,
-      perPage,
     };
     const res = await axiosInstance.get<NotesResponse>('/notes', { params });
     return res.data;
