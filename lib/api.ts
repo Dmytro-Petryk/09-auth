@@ -15,6 +15,7 @@ interface FetchParams {
   page?: number;
 }
 interface NotesResponse {
+  notes: Note[];
   data: Note[];
   totalPages: number;
 }

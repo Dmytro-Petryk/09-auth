@@ -39,7 +39,7 @@ export default function NotesClient({ notes }: NotesClientProps) {
     queryKey: ['notes', page, debouncedSearch],
     queryFn: () => fetchNotes(page, 10, debouncedSearch),
     initialData: () => ({
-      data: notes,
+      notes: notes,
       totalPages: 1,
     }),
   });
@@ -58,8 +58,8 @@ export default function NotesClient({ notes }: NotesClientProps) {
       {error && <p>Something went wrong.</p>}
       {!isLoading && !error && (
         <>
-          {Array.isArray(data?.data) && data.data.length > 0 && (
-            <NoteList notes={data.data} />
+          {Array.isArray(data?.notes) && data.notes.length > 0 && (
+            <NoteList notes={data.notes} />
           )}
           {(data?.totalPages ?? 0) > 1 && (
             <Pagination
