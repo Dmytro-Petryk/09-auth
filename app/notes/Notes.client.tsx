@@ -1,5 +1,5 @@
 'use client';
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { fetchNotes } from '@/lib/api';
 import NoteList from '@/components/NoteList/NoteList';
 import NoteModal from '@/components/NoteModal/NoteModal';
@@ -38,6 +38,7 @@ export default function NotesClient({ notes }: NotesClientProps) {
   const { data, isLoading, error } = useQuery({
     queryKey: ['notes', page, debouncedSearch],
     queryFn: () => fetchNotes(page, 10, debouncedSearch),
+    placeholderData: keepPreviousData,
     initialData: () => ({
       notes: notes,
       totalPages: 1,
