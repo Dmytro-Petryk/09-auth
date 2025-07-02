@@ -3,7 +3,7 @@ import { fetchNotes } from '@/lib/api';
 
 export default async function NotesPage() {
   try {
-    const { data: notes } = await fetchNotes(1, 100, '');
+    const { notes } = await fetchNotes(1, 100, '');
     return <NotesClient notes={notes} />;
   } catch (error) {
     console.error('Failed to fetch notes:', error);
