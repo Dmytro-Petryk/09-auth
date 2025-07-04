@@ -6,10 +6,16 @@ const BASE_URL = 'https://notehub-public.goit.study/api';
 const TOKEN = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
-  headers: {
-    Authorization: `Bearer ${TOKEN}`,
-  },
 });
+
+axiosInstance.interceptors.request.use((config) => {
+  const token = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 interface FetchParams {
   search?: string;
   page?: number;
