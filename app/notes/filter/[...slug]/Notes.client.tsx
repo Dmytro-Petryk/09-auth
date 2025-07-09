@@ -1,8 +1,9 @@
+/* eslint-disable react/no-children-prop */
 'use client';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { fetchNotes } from '@/lib/api';
 import NoteList from '@/components/NoteList/NoteList';
-import NoteModal from '@/components/NoteModal/NoteModal';
+import Modal from '@/components/Modal/Modal';
 import Pagination from '@/components/Pagination/Pagination';
 import SearchBox from '@/components/SearchBox/SearchBox';
 import { Note } from '@/types/note';
@@ -26,9 +27,10 @@ export function useDebounce<T>(value: T, delay: number): T {
 
 interface NotesClientProps {
   notes: Note[];
+  tag?: string;
 }
 
-export default function NotesClient({ notes }: NotesClientProps) {
+export default function NotesClient({ notes, tag }: NotesClientProps) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,8 +38,8 @@ export default function NotesClient({ notes }: NotesClientProps) {
   const debouncedSearch = useDebounce(search, 300);
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ['notes', page, debouncedSearch],
-    queryFn: () => fetchNotes(page, 10, debouncedSearch),
+    queryKey: ['notes', page, debouncedSearch, tag],
+    queryFn: () => fetchNotes(page, 10, debouncedSearch || tag),
     placeholderData: keepPreviousData,
     initialData: () => ({
       notes: notes,
@@ -54,7 +56,9 @@ export default function NotesClient({ notes }: NotesClientProps) {
     <>
       <SearchBox value={search} onChange={handleSearchChange} />
       <button onClick={() => setIsModalOpen(true)}>+ Add Note</button>
-      {isModalOpen && <NoteModal onClose={() => setIsModalOpen(false)} />}
+      {isModalOpen && (
+        <Modal onClose={() => setIsModalOpen(false)} children={undefined} />
+      )}
       {isLoading && <p>Loading, please wait...</p>}
       {error && <p>Something went wrong.</p>}
       {!isLoading && !error && (
