@@ -19,6 +19,7 @@ axiosInstance.interceptors.request.use((config) => {
 interface FetchParams {
   search?: string;
   page?: number;
+  tag?: string;
 }
 interface NotesResponse {
   notes: Note[];
@@ -35,13 +36,14 @@ export const fetchNotes = async (
   try {
     const params: FetchParams = {
       ...(search.trim() !== '' && { search: search.trim() }),
+      ...(tag && { tag }),
       page,
     };
     const res = await axiosInstance.get<NotesResponse>('/notes', { params });
     return res.data;
   } catch (error) {
     console.error('Failed to fetch notes:', error);
-    throw new Error('Could not fetch notes. Please try again later.');
+    throw Error('Could not fetch notes. Please try again later.');
   }
 };
 

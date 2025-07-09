@@ -1,5 +1,6 @@
-/* eslint-disable react/no-children-prop */
 'use client';
+/* eslint-disable react/no-children-prop */
+
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { fetchNotes } from '@/lib/api';
 import NoteList from '@/components/NoteList/NoteList';
@@ -39,7 +40,7 @@ export default function NotesClient({ notes, tag }: NotesClientProps) {
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['notes', page, debouncedSearch, tag],
-    queryFn: () => fetchNotes(page, 10, debouncedSearch || tag),
+    queryFn: () => fetchNotes(page, '', 10, tag, debouncedSearch),
     placeholderData: keepPreviousData,
     initialData: () => ({
       notes: notes,

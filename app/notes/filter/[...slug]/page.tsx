@@ -1,20 +1,20 @@
 import { fetchNotes } from '@/lib/api';
 import NotesClient from './Notes.client';
+interface Props {
+  params: {
+    slug?: string[];
+  };
+}
 
-type Props = {
-  params: { slug?: string[] };
-};
-
-export default async function NotesPage(props: Promise<Props>) {
-  const { params } = await props;
+export default async function NotesPage({ params }: Props) {
   const slug = params.slug ?? [];
   const tag = slug[0] === 'All' ? undefined : slug[0];
 
   try {
-    const { notes } = await fetchNotes(1, '', 100, tag);
-    return <NotesClient notes={notes} />;
+    const { notes } = await fetchNotes(1, '', 10, tag, '');
+    return <NotesClient notes={notes} tag={tag} />;
   } catch (error) {
     console.error('Failed to fetch notes:', error);
-    return <div>Unable to load notes.</div>;
+    return <div>Unable to load notes</div>;
   }
 }

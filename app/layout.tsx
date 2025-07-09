@@ -1,15 +1,13 @@
-import '@/app/globals.css';
-import { ReactNode } from 'react';
-import { Header } from '@/components/Header/Header';
 import { Footer } from '@/components/Footer/Footer';
+import { Header } from '@/components/Header/Header';
 import { TanStackProvider } from '@/components/TanStackProvider/TanStackProvider';
 
 export default function RootLayout({
   children,
   modal,
 }: {
-  children: ReactNode;
-  modal?: ReactNode;
+  children: React.ReactNode;
+  modal: React.ReactNode;
 }) {
   return (
     <html lang="en">
