@@ -27,7 +27,9 @@ interface NotesResponse {
 
 export const fetchNotes = async (
   page = 1,
+  p0: string,
   perPage = 10,
+  tag: string | undefined,
   search = ''
 ): Promise<NotesResponse> => {
   try {
