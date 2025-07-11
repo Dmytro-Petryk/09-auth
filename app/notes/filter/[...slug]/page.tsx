@@ -1,8 +1,12 @@
 import { fetchNotes } from '@/lib/api';
 import NotesClient from './Notes.client';
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default async function NotesPage({ params }: any) {
-  const slugArray = Array.isArray(params.slug) ? params.slug : [];
+type Props = {
+  params: Promise<{ slug: string[] }>;
+};
+export default async function NotesPage({ params }: Props) {
+  const slugArray = Array.isArray((await params).slug)
+    ? (await params).slug
+    : [];
   const tag = slugArray[0] ?? 'All';
 
   const validTags = ['All', 'Work', 'Personal', 'Shopping', 'Todo', 'Meeting'];

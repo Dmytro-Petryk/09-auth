@@ -1,15 +1,33 @@
-import { fetchNotes } from '@/lib/api';
-import NotesClient from '@/app/notes/filter/[...slug]/Notes.client';
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default async function NotesPage({ params }: any) {
-  const slugArray = Array.isArray(params.slug) ? params.slug : [];
-  const tag = slugArray[0] ?? 'All';
+'use client';
+import { useParams, useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
+import Modal from '@/components/Modal/Modal';
+import { fetchNoteById } from '@/lib/api';
+export default function NoteModalPage() {
+  const { id } = useParams();
+  const router = useRouter();
+  const {
+    data: note,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['note', id],
+    queryFn: () => fetchNoteById(Number(id)),
+    enabled: !!id,
+  });
 
-  const validTags = ['All', 'Work', 'Personal', 'Shopping', 'Todo', 'Meeting'];
-  const safeTag = validTags.includes(tag) ? tag : 'All';
-
-  const res = await fetchNotes(1, '', 100, safeTag);
-  const notes = res.data;
-
-  return <NotesClient notes={notes} tag={safeTag} />;
+  return (
+    <Modal onClose={() => router.back()}>
+      {isLoading && <p>Loading...</p>}
+      {error && <p>Error loading note</p>}
+      {!note ? (
+        <p>Note not found</p>
+      ) : (
+        <>
+          <h2>{note.title}</h2>
+          <p>{note.content}</p>
+        </>
+      )}
+    </Modal>
+  );
 }
