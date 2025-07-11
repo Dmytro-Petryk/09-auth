@@ -22,15 +22,17 @@ interface FetchParams {
   tag?: string;
 }
 interface NotesResponse {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any;
   notes: Note[];
   totalPages: number;
 }
 
 export const fetchNotes = async (
   page = 1,
-  p0: string,
+  p0?: string,
   perPage = 10,
-  tag: string | undefined,
+  tag?: string,
   search = ''
 ): Promise<NotesResponse> => {
   try {
@@ -39,7 +41,9 @@ export const fetchNotes = async (
       ...(tag && { tag }),
       page,
     };
+
     const res = await axiosInstance.get<NotesResponse>('/notes', { params });
+
     return res.data;
   } catch (error) {
     console.error('Failed to fetch notes:', error);

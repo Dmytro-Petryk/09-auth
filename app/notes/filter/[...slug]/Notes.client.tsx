@@ -1,5 +1,4 @@
 'use client';
-/* eslint-disable react/no-children-prop */
 
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { fetchNotes } from '@/lib/api';
@@ -9,6 +8,7 @@ import Pagination from '@/components/Pagination/Pagination';
 import SearchBox from '@/components/SearchBox/SearchBox';
 import { Note } from '@/types/note';
 import { useState, useEffect } from 'react';
+import NoteForm from '@/components/NoteForm/NoteForm';
 
 export function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -40,11 +40,11 @@ export default function NotesClient({ notes, tag }: NotesClientProps) {
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['notes', page, debouncedSearch, tag],
-    queryFn: () => fetchNotes(page, '', 10, tag, debouncedSearch),
+    queryFn: () => fetchNotes(page, debouncedSearch, 10, tag),
     placeholderData: keepPreviousData,
     initialData: () => ({
-      notes: notes,
-      totalPages: 1,
+      notes: notes || [],
+      totalPages: notes?.length ? Math.ceil(notes.length / 10) : 1,
     }),
   });
 
@@ -58,7 +58,9 @@ export default function NotesClient({ notes, tag }: NotesClientProps) {
       <SearchBox value={search} onChange={handleSearchChange} />
       <button onClick={() => setIsModalOpen(true)}>+ Add Note</button>
       {isModalOpen && (
-        <Modal onClose={() => setIsModalOpen(false)} children={undefined} />
+        <Modal onClose={() => setIsModalOpen(false)}>
+          <NoteForm onClose={() => setIsModalOpen(false)} />
+        </Modal>
       )}
       {isLoading && <p>Loading, please wait...</p>}
       {error && <p>Something went wrong.</p>}

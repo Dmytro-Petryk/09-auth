@@ -1,3 +1,17 @@
-export default function PageFree() {
-  return null;
+import { fetchNotes } from '@/lib/api';
+import NotesClient from './Notes.client';
+
+type Props = {
+  params: Promise<{ slug: string[] }>;
+};
+export default async function NotesPage({ params }: Props) {
+  const slugArray = (await params).slug ?? [];
+  const tag = slugArray[0] ?? 'All';
+  const validTags = ['All', 'Work', 'Personal', 'Shopping', 'Todo', 'Meeting'];
+  const safeTag = validTags.includes(tag) ? tag : 'All';
+
+  const res = await fetchNotes(1, '', 100, safeTag);
+  const notes = res.data;
+
+  return <NotesClient notes={notes} />;
 }
