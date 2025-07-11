@@ -1,5 +1,4 @@
 'use client';
-
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { fetchNotes } from '@/lib/api';
 import NoteList from '@/components/NoteList/NoteList';

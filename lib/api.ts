@@ -30,24 +30,23 @@ interface NotesResponse {
 
 export const fetchNotes = async (
   page = 1,
-  p0?: string,
+  _unused = '',
   perPage = 10,
   tag?: string,
   search = ''
 ): Promise<NotesResponse> => {
   try {
     const params: FetchParams = {
-      ...(search.trim() !== '' && { search: search.trim() }),
-      ...(tag && { tag }),
       page,
+      ...(search && { search }),
+      ...(tag && { tag }),
     };
-
+    console.log('params to /notes:', params);
     const res = await axiosInstance.get<NotesResponse>('/notes', { params });
-
     return res.data;
   } catch (error) {
     console.error('Failed to fetch notes:', error);
-    throw Error('Could not fetch notes. Please try again later.');
+    throw Error('Could not fetch notes.');
   }
 };
 
