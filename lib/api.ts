@@ -36,11 +36,17 @@ export const fetchNotes = async (
   search = ''
 ): Promise<NotesResponse> => {
   try {
-    const params: FetchParams = {
-      page,
-      ...(search && { search }),
-      ...(tag && { tag }),
-    };
+    const params: FetchParams = {};
+    if (typeof page === 'number' && page > 0) {
+      params.page = page;
+    }
+    if (search?.trim()) {
+      params.search = search.trim();
+    }
+    if (tag && tag !== 'All') {
+      params.tag = tag;
+    }
+
     console.log('params to /notes:', params);
     const res = await axiosInstance.get<NotesResponse>('/notes', { params });
     return res.data;
