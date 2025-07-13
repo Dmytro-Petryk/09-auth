@@ -1,19 +1,30 @@
-import { fetchNotes } from '@/lib/api';
-import NotesClient from '../filter/[...slug]/Notes.client';
+import { fetchNoteById } from '@/lib/api';
+import { notFound } from 'next/navigation';
+
 type Props = {
-  params: Promise<{ slug: string[] }>;
+  params: Promise<{ id: string }>;
 };
 
 export default async function NotesPage({ params }: Props) {
-  const { slug } = await params;
+  const { id } = await params;
 
-  const tag = slug[0] === 'All' ? undefined : slug[0];
+  const noteId = Number(id);
+
+  if (isNaN(noteId)) {
+    notFound();
+  }
 
   try {
-    const { notes } = await fetchNotes(1, tag);
-    return <NotesClient notes={notes} tag={tag} />;
+    const note = await fetchNoteById(noteId);
+    return (
+      <div>
+        <h1>{note.title}</h1>
+        <p>{note.content}</p>
+        <p>Tag: {note.tag}</p>
+      </div>
+    );
   } catch (error) {
-    console.error('Failed to fetch notes:', error);
-    return <div>Unable to load notes</div>;
+    console.error('Failed to fetch note by id:', error);
+    notFound();
   }
 }
