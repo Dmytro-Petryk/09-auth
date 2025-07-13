@@ -30,8 +30,6 @@ interface NotesResponse {
 
 export const fetchNotes = async (
   page = 1,
-  _unused = '',
-  perPage = 10,
   tag?: string,
   search = ''
 ): Promise<NotesResponse> => {

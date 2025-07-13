@@ -10,7 +10,7 @@ export default async function NotesPage({ params }: Props) {
   const tag = slug[0] === 'All' ? undefined : slug[0];
 
   try {
-    const { notes } = await fetchNotes(1, '', 10, tag, '');
+    const { notes } = await fetchNotes(1, tag);
     return <NotesClient notes={notes} tag={tag} />;
   } catch (error) {
     console.error('Failed to fetch notes:', error);
