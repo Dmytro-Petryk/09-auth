@@ -2,12 +2,11 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { fetchNotes } from '@/lib/api';
 import NoteList from '@/components/NoteList/NoteList';
-import Modal from '@/components/Modal/Modal';
 import Pagination from '@/components/Pagination/Pagination';
 import SearchBox from '@/components/SearchBox/SearchBox';
 import { Note } from '@/types/note';
 import { useState, useEffect } from 'react';
-import NoteForm from '@/components/NoteForm/NoteForm';
+import Link from 'next/link';
 
 export function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -33,7 +32,6 @@ interface NotesClientProps {
 export default function NotesClient({ notes, tag }: NotesClientProps) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const debouncedSearch = useDebounce(search, 300);
 
@@ -58,12 +56,7 @@ export default function NotesClient({ notes, tag }: NotesClientProps) {
   return (
     <>
       <SearchBox value={search} onChange={handleSearchChange} />
-      <button onClick={() => setIsModalOpen(true)}>+ Add Note</button>
-      {isModalOpen && (
-        <Modal onClose={() => setIsModalOpen(false)}>
-          <NoteForm onClose={() => setIsModalOpen(false)} />
-        </Modal>
-      )}
+      <Link href="/notes/action/create">+ Create note</Link>
       {isLoading && <p>Loading, please wait...</p>}
       {error && <p>Something went wrong.</p>}
       {!isLoading && !error && (
