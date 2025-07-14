@@ -1,8 +1,9 @@
 'use client';
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createNote } from '@/lib/api';
 import { useNoteStore } from '@/lib/store/noteStore';
+import { useRouter } from 'next/navigation';
 import css from './NoteForm.module.css';
 
 type NoteFormProps = object;
@@ -10,10 +11,17 @@ type NoteFormProps = object;
 export default function NoteForm({}: NoteFormProps) {
   const queryClient = useQueryClient();
   const { draft, setDraft, clearDraft } = useNoteStore();
+  const router = useRouter();
 
   const [title, setTitle] = useState(draft.title);
   const [content, setContent] = useState(draft.content);
   const [tag, setTag] = useState(draft.tag);
+
+  useEffect(() => {
+    setTitle(draft.title);
+    setContent(draft.content);
+    setTag(draft.tag);
+  }, [draft]);
 
   const mutation = useMutation({
     mutationFn: (values: { title: string; content: string; tag: string }) =>
@@ -21,6 +29,7 @@ export default function NoteForm({}: NoteFormProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes'] });
       clearDraft();
+      router.push('/notes');
     },
   });
 
@@ -71,6 +80,10 @@ export default function NoteForm({}: NoteFormProps) {
           <option value="Shopping">Shopping</option>
         </select>
       </label>
+
+      <button type="button" onClick={() => router.back()}>
+        Cancel
+      </button>
 
       <button type="submit" disabled={mutation.isPending}>
         Create note

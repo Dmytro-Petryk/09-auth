@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { Roboto } from 'next/font/google';
 import { Footer } from '@/components/Footer/Footer';
 import { Header } from '@/components/Header/Header';
@@ -10,14 +11,18 @@ const roboto = Roboto({
   variable: '--font-roboto',
 });
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'NoteHub',
   description: 'Create, manage and explore your notes',
   openGraph: {
     title: 'NoteHub',
     description: 'Create, manage and explore your notes',
     url: 'https://your-deployed-url.vercel.app',
-    images: ['https://ac.goit.global/fullstack/react/notehub-og-meta.jpg'],
+    images: [
+      {
+        url: 'https://ac.goit.global/fullstack/react/notehub-og-meta.jpg',
+      },
+    ],
   },
 };
 

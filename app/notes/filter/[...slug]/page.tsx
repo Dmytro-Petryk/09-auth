@@ -1,7 +1,8 @@
+import type { Metadata } from 'next';
 import { fetchNotes } from '@/lib/api';
 import NotesClient from './Notes.client';
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const tag = (await params).slug?.[0] || 'All';
   const title = `Notes with tag: ${tag} - NoteHub`;
   const description = `View notes filtered by tag: ${tag}.`;
@@ -13,7 +14,11 @@ export async function generateMetadata({ params }: Props) {
       title,
       description,
       url: `https://your-deployed-url.vercel.app/notes/filter/${tag}`,
-      images: ['https://ac.goit.global/fullstack/react/notehub-og-meta.jpg'],
+      images: [
+        {
+          url: 'https://ac.goit.global/fullstack/react/notehub-og-meta.jpg',
+        },
+      ],
     },
   };
 }

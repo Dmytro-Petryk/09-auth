@@ -1,12 +1,17 @@
+import type { Metadata } from 'next';
 import styles from './Home.module.css';
-export const metadata = {
+export const metadata: Metadata = {
   title: 'Page not found - NoteHub',
   description: 'Oops! The page you are looking for does not exist.',
   openGraph: {
     title: 'Page not found - NoteHub',
     description: 'Oops! The page you are looking for does not exist.',
     url: 'https://your-deployed-url.vercel.app/not-found',
-    images: ['https://ac.goit.global/fullstack/react/notehub-og-meta.jpg'],
+    images: [
+      {
+        url: 'https://ac.goit.global/fullstack/react/notehub-og-meta.jpg',
+      },
+    ],
   },
 };
 export default function NotFoundPage() {
