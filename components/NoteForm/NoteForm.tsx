@@ -1,5 +1,4 @@
 'use client';
-import { useState, FormEvent, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createNote } from '@/lib/api';
 import { useNoteStore } from '@/lib/store/noteStore';
@@ -13,16 +12,6 @@ export default function NoteForm({}: NoteFormProps) {
   const { draft, setDraft, clearDraft } = useNoteStore();
   const router = useRouter();
 
-  const [title, setTitle] = useState(draft.title);
-  const [content, setContent] = useState(draft.content);
-  const [tag, setTag] = useState(draft.tag);
-
-  useEffect(() => {
-    setTitle(draft.title);
-    setContent(draft.content);
-    setTag(draft.tag);
-  }, [draft]);
-
   const mutation = useMutation({
     mutationFn: (values: { title: string; content: string; tag: string }) =>
       createNote(values),
@@ -33,44 +22,42 @@ export default function NoteForm({}: NoteFormProps) {
     },
   });
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    mutation.mutate({ title, content, tag });
+  const handleSubmit = async (formData: FormData) => {
+    const note = {
+      title: formData.get('title') as string,
+      content: formData.get('content') as string,
+      tag: formData.get('tag') as string,
+    };
+    mutation.mutate(note);
   };
 
   return (
-    <form className={css.form} onSubmit={handleSubmit}>
+    <form className={css.form} action={handleSubmit}>
       <label>
         Title
         <input
           type="text"
-          value={title}
-          onChange={(e) => {
-            setTitle(e.target.value);
-            setDraft({ title: e.target.value });
-          }}
+          name="title"
+          value={draft.title}
+          onChange={(e) => setDraft({ ...draft, title: e.target.value })}
         />
       </label>
 
       <label>
         Content
         <textarea
-          value={content}
-          onChange={(e) => {
-            setContent(e.target.value);
-            setDraft({ content: e.target.value });
-          }}
+          name="content"
+          value={draft.content}
+          onChange={(e) => setDraft({ ...draft, content: e.target.value })}
         />
       </label>
 
       <label>
         Tag
         <select
-          value={tag}
-          onChange={(e) => {
-            setTag(e.target.value);
-            setDraft({ tag: e.target.value });
-          }}
+          name="tag"
+          value={draft.tag}
+          onChange={(e) => setDraft({ ...draft, tag: e.target.value })}
         >
           <option value="">Select tag</option>
           <option value="Todo">Todo</option>
