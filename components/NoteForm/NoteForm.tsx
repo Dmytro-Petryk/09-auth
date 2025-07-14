@@ -18,7 +18,7 @@ export default function NoteForm({}: NoteFormProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes'] });
       clearDraft();
-      router.push('/notes');
+      router.back();
     },
   });
 
