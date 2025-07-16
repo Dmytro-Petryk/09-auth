@@ -11,12 +11,14 @@
   "dependencies": {
     "@tanstack/react-query": "^5.83.0",
     "axios": "^1.10.0",
+    "cookie": "^1.0.2",
     "formik": "^2.4.6",
     "formix": "^0.0.1",
     "next": "^15.3.4",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-paginate": "^8.3.0",
+    "toast": "^0.5.4",
     "use-debounce": "^10.0.5",
     "yup": "^1.6.1",
     "zustand": "^5.0.6"

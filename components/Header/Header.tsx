@@ -1,6 +1,7 @@
 import css from './Header.module.css';
 import Link from 'next/link';
 import { TagsMenu } from '../TagsMenu/TagsMenu';
+import { AuthNavigation } from '../AuthNavigation/AuthNavigation';
 
 export function Header() {
   return (
@@ -15,6 +16,9 @@ export function Header() {
           </li>
           <li>
             <TagsMenu />
+          </li>
+          <li className={css.navList}>
+            <AuthNavigation />
           </li>
         </ul>
       </nav>
