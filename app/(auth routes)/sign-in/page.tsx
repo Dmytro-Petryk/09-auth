@@ -28,35 +28,31 @@ export default function SignIn() {
     <main className={css.mainContent}>
       <form className={css.form} onSubmit={onSubmit}>
         <h1 className={css.formTitle}>Sign in</h1>
-
         <div className={css.formGroup}>
           <label htmlFor="email">Email</label>
           <input
             id="email"
-            type="email"
             name="email"
+            type="email"
             className={css.input}
             required
           />
         </div>
-
         <div className={css.formGroup}>
           <label htmlFor="password">Password</label>
           <input
             id="password"
-            type="password"
             name="password"
+            type="password"
             className={css.input}
             required
           />
         </div>
-
         <div className={css.actions}>
           <button type="submit" className={css.submitButton}>
             Log in
           </button>
         </div>
-
         <p className={css.error}>{error}</p>
       </form>
     </main>

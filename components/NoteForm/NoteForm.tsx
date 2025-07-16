@@ -1,9 +1,28 @@
 'use client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createNote } from '@/lib/api';
-import { useNoteStore } from '@/lib/store/noteStore';
+import { createNote } from '@/lib/api/clientApi';
 import { useRouter } from 'next/navigation';
 import css from './NoteForm.module.css';
+
+import { create } from 'zustand';
+
+type DraftNote = {
+  title: string;
+  content: string;
+  tag: string;
+};
+
+type NoteStore = {
+  draft: DraftNote;
+  setDraft: (draft: DraftNote) => void;
+  clearDraft: () => void;
+};
+
+const useNoteStore = create<NoteStore>((set) => ({
+  draft: { title: '', content: '', tag: '' },
+  setDraft: (draft) => set({ draft }),
+  clearDraft: () => set({ draft: { title: '', content: '', tag: '' } }),
+}));
 
 type NoteFormProps = object;
 

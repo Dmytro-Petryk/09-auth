@@ -1,8 +1,8 @@
 'use client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/lib/store/authStore';
-import { logoutUser } from '@/lib/api/clientApi';
+import { useAuthStore } from '../../lib/store/authStore';
+import { logoutUser } from '../../lib/api/clientApi';
 import css from './AuthNavigation.module.css';
 
 export const AuthNavigation = () => {
@@ -19,16 +19,12 @@ export const AuthNavigation = () => {
     <ul>
       {isAuthenticated ? (
         <>
-          <li className={css.navigationItem}>
-            <Link
-              href="/profile"
-              prefetch={false}
-              className={css.navigationLink}
-            >
+          <li>
+            <Link href="/profile" className={css.navigationLink}>
               Profile
             </Link>
           </li>
-          <li className={css.navigationItem}>
+          <li>
             <p className={css.userEmail}>{user?.email}</p>
             <button onClick={handleLogout} className={css.logoutButton}>
               Logout
@@ -37,22 +33,14 @@ export const AuthNavigation = () => {
         </>
       ) : (
         <>
-          <li className={css.navigationItem}>
-            <Link
-              href="/sign-in"
-              prefetch={false}
-              className={css.navigationLink}
-            >
+          <li>
+            <Link href="/sign-in" className={css.navigationLink}>
               Login
             </Link>
           </li>
-          <li className={css.navigationItem}>
-            <Link
-              href="/sign-up"
-              prefetch={false}
-              className={css.navigationLink}
-            >
-              Register
+          <li>
+            <Link href="/sign-up" className={css.navigationLink}>
+              Sign up
             </Link>
           </li>
         </>

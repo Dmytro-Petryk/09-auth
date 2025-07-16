@@ -1,9 +1,13 @@
 import type { Metadata } from 'next';
-import { fetchNotes } from '@/lib/api/serverApi';
+import { fetchNotes } from '@/lib/api/clientApi';
 import NotesClient from './Notes.client';
 
+type Props = {
+  params: { slug?: string[] };
+};
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const tag = (await params).slug?.[0] || 'All';
+  const tag = Array.isArray(params.slug) ? params.slug[0] : 'All';
   const title = `Notes with tag: ${tag} - NoteHub`;
   const description = `View notes filtered by tag: ${tag}.`;
 
@@ -22,13 +26,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
   };
 }
-type Props = {
-  params: Promise<{ slug: string[] }>;
-};
+
 export default async function NotesPage({ params }: Props) {
-  const slugArray = Array.isArray((await params).slug)
-    ? (await params).slug
-    : [];
+  const slugArray = Array.isArray(params.slug) ? params.slug : [];
   const tag = slugArray[0] ?? 'All';
 
   const validTags = ['All', 'Work', 'Personal', 'Shopping', 'Todo', 'Meeting'];

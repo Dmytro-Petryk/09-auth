@@ -1,27 +1,27 @@
-// middleware.ts
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export function middleware(request: NextRequest) {
-  const token = request.cookies.get('token')?.value;
-  const isPrivateRoute =
-    request.nextUrl.pathname.startsWith('/notes') ||
-    request.nextUrl.pathname.startsWith('/profile');
-  const isAuthRoute = ['/sign-in', '/sign-up'].includes(
-    request.nextUrl.pathname
-  );
+export function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+  const token = req.cookies.get('token');
 
-  if (!token && isPrivateRoute) {
-    return NextResponse.redirect(new URL('/sign-in', request.url));
+  const publicRoutes = ['/sign-in', '/sign-up', '/api/auth'];
+  const isPublic = publicRoutes.some((r) => pathname.startsWith(r));
+  const isPrivate =
+    pathname.startsWith('/profile') || pathname.startsWith('/notes');
+
+  if (!token && isPrivate) {
+    const url = req.nextUrl.clone();
+    url.pathname = '/sign-in';
+    return NextResponse.redirect(url);
   }
 
-  if (token && isAuthRoute) {
-    return NextResponse.redirect(new URL('/profile', request.url));
+  if (token && (pathname === '/sign-in' || pathname === '/sign-up')) {
+    const url = req.nextUrl.clone();
+    url.pathname = '/profile';
+    return NextResponse.redirect(url);
   }
 
   return NextResponse.next();
 }
 
-export const config = {
-  matcher: ['/notes/:path*', '/profile/:path*', '/sign-in', '/sign-up'],
-};
+export const config = { matcher: ['/(profile|notes|sign-in|sign-up)'] };

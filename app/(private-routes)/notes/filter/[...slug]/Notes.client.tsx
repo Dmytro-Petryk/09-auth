@@ -1,5 +1,5 @@
 'use client';
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { fetchNotes } from '@/lib/api/clientApi';
 import NoteList from '@/components/NoteList/NoteList';
 import Pagination from '@/components/Pagination/Pagination';
@@ -35,17 +35,23 @@ export default function NotesClient({ notes, tag }: NotesClientProps) {
 
   const debouncedSearch = useDebounce(search, 300);
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery<{
+    notes: Note[];
+    totalPages: number;
+  }>({
     queryKey: ['notes', page, debouncedSearch, tag],
-    queryFn: () => {
+    queryFn: async () => {
       const currentTag = tag === 'All' ? undefined : tag;
-      return fetchNotes(page, currentTag, debouncedSearch);
+      const result = await fetchNotes(page, currentTag, debouncedSearch);
+      return {
+        notes: result.notes,
+        totalPages: result.totalPages,
+      };
     },
-    placeholderData: keepPreviousData,
-    initialData: () => ({
+    initialData: {
       notes: notes || [],
-      totalPages: notes?.length ? Math.ceil(notes.length / 10) : 1,
-    }),
+      totalPages: notes?.length ? Math.ceil(notes.length / 12) : 1,
+    },
   });
 
   const handleSearchChange = (value: string) => {
@@ -67,7 +73,7 @@ export default function NotesClient({ notes, tag }: NotesClientProps) {
           {(data?.totalPages ?? 0) > 1 && (
             <Pagination
               currentPage={page}
-              totalPages={data?.totalPages ?? 1}
+              totalPages={data.totalPages}
               onPageChange={setPage}
             />
           )}

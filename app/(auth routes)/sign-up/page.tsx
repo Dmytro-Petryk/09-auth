@@ -29,30 +29,27 @@ export default function SignUp() {
           <label htmlFor="email">Email</label>
           <input
             id="email"
-            type="email"
             name="email"
+            type="email"
             className={css.input}
             required
           />
         </div>
-
         <div className={css.formGroup}>
           <label htmlFor="password">Password</label>
           <input
             id="password"
-            type="password"
             name="password"
+            type="password"
             className={css.input}
             required
           />
         </div>
-
         <div className={css.actions}>
           <button type="submit" className={css.submitButton}>
             Register
           </button>
         </div>
-
         <p className={css.error}>{error}</p>
       </form>
     </main>
