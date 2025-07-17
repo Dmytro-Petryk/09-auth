@@ -2,6 +2,7 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import { fetchSession, setAuthToken } from '@/lib/api/clientApi';
 import { useAuthStore } from '@/lib/store/authStore';
+import { useRouter } from 'next/navigation';
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -42,5 +43,18 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
   return <>{children}</>;
 };
+export function ViewNotesButton() {
+  const router = useRouter();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
+  const handleClick = () => {
+    if (isAuthenticated) {
+      router.push('/notes'); // якщо авторизований — на нотатки
+    } else {
+      router.push('/sign-in'); // якщо ні — на сторінку входу
+    }
+  };
+
+  return <button onClick={handleClick}>Подивитись нотатки</button>;
+}
 export { AuthProvider };

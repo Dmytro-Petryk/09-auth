@@ -1,33 +1,24 @@
-import serverApi from '../../../lib/api/serverApi';
-import { cookies } from 'next/headers';
+'use client';
+import Link from 'next/link';
 import Image from 'next/image';
+import { useAuthStore } from '@/lib/store/authStore';
 import css from './ProfilePage.module.css';
 
-export default async function ProfilePage() {
-  const allCookies = await cookies();
-  const res = await serverApi.get('/auth/session', {
-    headers: {
-      cookie: allCookies
-        .getAll()
-        .map((c) => `${c.name}=${c.value}`)
-        .join('; '),
-    },
-  });
-
-  const user = res.data;
+export default function ProfilePage() {
+  const user = useAuthStore((state) => state.user);
 
   return (
     <main className={css.mainContent}>
       <div className={css.profileCard}>
         <div className={css.header}>
           <h1 className={css.formTitle}>Profile Page</h1>
-          <a href="/profile/edit" className={css.editProfileButton}>
+          <Link href="/profile/edit" className={css.editProfileButton}>
             Edit Profile
-          </a>
+          </Link>
         </div>
         <div className={css.avatarWrapper}>
           <Image
-            src={user.avatarUrl || '/default-avatar.png'}
+            src={user?.avatarUrl || '/default-avatar.png'}
             alt="User Avatar"
             width={120}
             height={120}
@@ -35,8 +26,8 @@ export default async function ProfilePage() {
           />
         </div>
         <div className={css.profileInfo}>
-          <p>Username: {user.username || 'No username'}</p>
-          <p>Email: {user.email}</p>
+          <p>Username: {user?.username}</p>
+          <p>Email: {user?.email}</p>
         </div>
       </div>
     </main>
