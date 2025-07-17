@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { loginUser } from '@/lib/api/clientApi';
-import { useAuthStore } from '@/lib/store/authStore';
+import { useAuthStore } from '@/lib/store/noteStore';
 import css from './SignInPage.module.css';
 
 export default function SignIn() {

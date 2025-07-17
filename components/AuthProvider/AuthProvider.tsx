@@ -1,7 +1,7 @@
 'use client';
 import React, { ReactNode, useEffect, useState } from 'react';
 import { fetchSession, setAuthToken } from '@/lib/api/clientApi';
-import { useAuthStore } from '@/lib/store/authStore';
+import { useAuthStore } from '@/lib/store/noteStore';
 import { useRouter } from 'next/navigation';
 
 interface AuthProviderProps {

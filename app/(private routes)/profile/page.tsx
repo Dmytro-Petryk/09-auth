@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useAuthStore } from '@/lib/store/authStore';
+import { useAuthStore } from '@/lib/store/noteStore';
 import css from './ProfilePage.module.css';
 
 export default function ProfilePage() {

@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/lib/store/authStore';
+import { useAuthStore } from '@/lib/store/noteStore';
 import { updateUser } from '@/lib/api/clientApi';
 import Image from 'next/image';
 import css from './EditProfilePage.module.css';
