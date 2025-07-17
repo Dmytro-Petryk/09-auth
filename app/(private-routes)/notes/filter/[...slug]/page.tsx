@@ -1,40 +1,40 @@
-import type { Metadata } from 'next';
-import { fetchNotes } from '@/lib/api/clientApi';
 import NotesClient from './Notes.client';
+import { Metadata } from 'next';
+import { fetchNotesServer } from '@/lib/api/serverApi';
+import { cookies } from 'next/headers';
 
-type Props = {
-  params: { slug?: string[] };
-};
+interface Props {
+  params: Promise<{ slug: string[] }>;
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const tag = Array.isArray(params.slug) ? params.slug[0] : 'All';
-  const title = `Notes with tag: ${tag} - NoteHub`;
-  const description = `View notes filtered by tag: ${tag}.`;
+  const { slug } = await params;
+  const category = slug[0];
 
   return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      url: `https://your-deployed-url.vercel.app/notes/filter/${tag}`,
-      images: [
-        {
-          url: 'https://ac.goit.global/fullstack/react/notehub-og-meta.jpg',
-        },
-      ],
-    },
+    title: `Category: ${category}`,
+    description: `View all notes filtered by category: ${category}.`,
   };
 }
 
-export default async function NotesPage({ params }: Props) {
-  const slugArray = Array.isArray(params.slug) ? params.slug : [];
-  const tag = slugArray[0] ?? 'All';
+const NotesByCategory = async ({ params }: Props) => {
+  const { slug } = await params;
+  const category = slug[0]?.toLowerCase() === 'all' ? undefined : slug[0];
 
-  const validTags = ['All', 'Work', 'Personal', 'Shopping', 'Todo', 'Meeting'];
-  const safeTag = validTags.includes(tag) ? tag : 'All';
-  const res = await fetchNotes(1, safeTag === 'All' ? undefined : safeTag);
-  const notes = res.data;
+  const cookieStore = cookies();
+  const cookieString = (await cookieStore)
+    .getAll()
+    .map((c) => `${c.name}=${c.value}`)
+    .join('; ');
 
-  return <NotesClient notes={notes} tag={safeTag} />;
-}
+  const response = await fetchNotesServer(cookieString, 1, category);
+  const { notes } = response.data;
+
+  return (
+    <div>
+      <NotesClient notes={notes} tag={category ?? 'All'} />
+    </div>
+  );
+};
+
+export default NotesByCategory;

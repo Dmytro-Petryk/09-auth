@@ -1,34 +1,46 @@
 'use client';
-import { ReactNode, useEffect, useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
-import { fetchSession } from '../../lib/api/clientApi';
-import { useAuthStore } from '../../lib/store/authStore';
+import React, { ReactNode, useEffect, useState } from 'react';
+import { fetchSession, setAuthToken } from '@/lib/api/clientApi';
+import { useAuthStore } from '@/lib/store/authStore';
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const { setUser, clearAuth, isAuthenticated } = useAuthStore();
-  const [checking, setChecking] = useState(true);
-  const path = usePathname();
-  const router = useRouter();
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+const AuthProvider = ({ children }: AuthProviderProps) => {
+  const setUser = useAuthStore((state) => state.setUser);
+  const clearIsAuthenticated = useAuthStore(
+    (state) => state.clearIsAuthenticated
+  );
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    (async () => {
+    async function checkSession() {
       try {
         const user = await fetchSession();
-        if (user) setUser(user);
-        else {
-          clearAuth();
-          if (path.startsWith('/profile') || path.startsWith('/notes')) {
-            router.replace('/sign-in');
-          }
+        if (user) {
+          setUser(user);
+          setAuthToken(user.token); // <-- Збереження токена для axios
+        } else {
+          clearIsAuthenticated();
+          setAuthToken(null);
         }
-      } catch {
-        clearAuth();
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error) {
+        clearIsAuthenticated();
+        setAuthToken(null);
       } finally {
-        setChecking(false);
+        setLoading(false);
       }
-    })();
-  }, [path]);
+    }
+    checkSession();
+  }, [setUser, clearIsAuthenticated]);
 
-  if (checking) return <p>Loading...</p>;
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return <>{children}</>;
 };
+
+export { AuthProvider };

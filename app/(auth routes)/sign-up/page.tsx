@@ -16,6 +16,7 @@ export default function SignUp() {
     try {
       await registerUser(email, password);
       router.push('/profile');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(err.response?.data?.message || 'Error');
     }

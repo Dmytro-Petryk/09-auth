@@ -1,12 +1,19 @@
-import { serverApi } from '../../../lib/api/serverApi';
+import serverApi from '../../../lib/api/serverApi';
 import { cookies } from 'next/headers';
 import Image from 'next/image';
 import css from './ProfilePage.module.css';
 
 export default async function ProfilePage() {
+  const allCookies = await cookies();
   const res = await serverApi.get('/auth/session', {
-    headers: { cookie: cookies().toString() },
+    headers: {
+      cookie: allCookies
+        .getAll()
+        .map((c) => `${c.name}=${c.value}`)
+        .join('; '),
+    },
   });
+
   const user = res.data;
 
   return (

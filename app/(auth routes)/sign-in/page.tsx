@@ -19,6 +19,7 @@ export default function SignIn() {
       const user = await loginUser(email, password);
       setUser(user);
       router.push('/profile');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(err.response?.data?.message || 'Error');
     }

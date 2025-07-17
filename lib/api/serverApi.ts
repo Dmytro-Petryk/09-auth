@@ -1,16 +1,31 @@
+import { Note } from '@/types/note';
 import axios from 'axios';
-import { cookies } from 'next/headers';
 
-const baseURL = process.env.NEXT_PUBLIC_API_URL + '/api';
+export interface NotesResponse {
+  notes: Note[];
+  totalPages: number;
+}
 
-export const serverApi = axios.create({
-  baseURL,
-});
+export const fetchNotesServer = (
+  cookieHeader: string,
+  page: number,
+  tag?: string,
+  search?: string
+) => {
+  return axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/notes`, {
+    params: { page, tag, search },
+    headers: {
+      cookie: cookieHeader,
+    },
+    withCredentials: true,
+  });
+};
 
-serverApi.interceptors.request.use((config) => {
-  const cookieStore = cookies().toString();
-  if (cookieStore && config.headers) {
-    config.headers['cookie'] = cookieStore;
-  }
-  return config;
-});
+const serverApi = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  get: (url: string, config?: any) => {
+    return axios.get(`${process.env.NEXT_PUBLIC_API_URL}${url}`, config);
+  },
+};
+
+export default serverApi;
