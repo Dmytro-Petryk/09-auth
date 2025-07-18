@@ -2,25 +2,31 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  const token = request.cookies.get('accessToken');
+  const token =
+    request.cookies.get('next-auth.session-token')?.value ||
+    request.cookies.get('__Secure-next-auth.session-token')?.value;
+
   const { pathname } = request.nextUrl;
 
   const isPublicRoute =
     pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up');
 
-  if (!token && !isPublicRoute) {
-    // Якщо не авторизований, редірект на вхід
-    return NextResponse.redirect(new URL('/sign-in', request.url));
+  if (
+    !token &&
+    ['/notes', '/profile'].some((path) => pathname.startsWith(path))
+  ) {
+    const signInUrl = new URL('/sign-in', request.url);
+    signInUrl.searchParams.set('callbackUrl', pathname);
+    return NextResponse.redirect(signInUrl);
   }
 
   if (token && isPublicRoute) {
-    // Якщо авторизований, редірект зі сторінок входу/реєстрації на нотатки
-    return NextResponse.redirect(new URL('/notes', request.url));
+    return NextResponse.redirect(new URL('/profile', request.url));
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/', '/notes/:path*', '/profile', '/sign-in', '/sign-up'],
+  matcher: ['/notes/:path*', '/profile', '/sign-in', '/sign-up'],
 };

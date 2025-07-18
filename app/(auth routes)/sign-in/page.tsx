@@ -1,14 +1,16 @@
 'use client';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { loginUser } from '@/lib/api/clientApi';
-import { useAuthStore } from '@/lib/store/noteStore';
+import { useAuthStore } from '@/lib/store/authStore';
 import css from './SignInPage.module.css';
 
 export default function SignIn() {
   const [error, setError] = useState('');
   const setUser = useAuthStore((s) => s.setUser);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/notes';
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,7 +20,7 @@ export default function SignIn() {
     try {
       const user = await loginUser(email, password);
       setUser(user);
-      router.push('/profile');
+      router.push(callbackUrl);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(err.response?.data?.message || 'Error');

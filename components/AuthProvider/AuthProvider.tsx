@@ -1,7 +1,7 @@
 'use client';
 import React, { ReactNode, useEffect, useState } from 'react';
 import { fetchSession, setAuthToken } from '@/lib/api/clientApi';
-import { useAuthStore } from '@/lib/store/noteStore';
+import { useAuthStore } from '@/lib/store/authStore';
 import { useRouter } from 'next/navigation';
 
 interface AuthProviderProps {
@@ -21,7 +21,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         const user = await fetchSession();
         if (user) {
           setUser(user);
-          setAuthToken(user.token); // <-- Збереження токена для axios
+          setAuthToken(user.token);
         } else {
           clearIsAuthenticated();
           setAuthToken(null);
