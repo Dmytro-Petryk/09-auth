@@ -10,7 +10,7 @@ import css from './NotePreview.module.css';
 export default function NotePreview() {
   const params = useParams();
   const router = useRouter();
-  const id = params?.id;
+  const id = Array.isArray(params?.id) ? params.id[0] : params?.id;
 
   const {
     data: note,
@@ -18,7 +18,7 @@ export default function NotePreview() {
     error,
   } = useQuery({
     queryKey: ['note', id],
-    queryFn: () => fetchNoteById(Number(id)),
+    queryFn: () => fetchNoteById(id!),
     enabled: !!id,
     refetchOnMount: false,
   });

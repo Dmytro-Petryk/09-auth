@@ -4,11 +4,12 @@ import { fetchNoteById } from '@/lib/api/clientApi';
 import css from './NoteDetails.module.css';
 
 interface NoteDetailsClientProps {
-  noteId: number;
+  noteId: string;
 }
 
 export default function NoteDetailsClient({ noteId }: NoteDetailsClientProps) {
-  const isValidId = !isNaN(noteId) && Number.isInteger(noteId) && noteId > 0;
+  const id = Number(noteId);
+  const isValidId = !isNaN(id) && Number.isInteger(id) && id > 0;
 
   if (!isValidId) {
     return <p>Invalid note ID.</p>;
@@ -16,7 +17,7 @@ export default function NoteDetailsClient({ noteId }: NoteDetailsClientProps) {
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { data, isLoading, error } = useQuery({
-    queryKey: ['note', noteId],
+    queryKey: ['note', id],
     queryFn: () => fetchNoteById(noteId),
     refetchOnMount: false,
   });

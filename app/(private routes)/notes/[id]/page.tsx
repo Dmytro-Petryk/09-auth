@@ -8,11 +8,10 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const noteId = Number(id);
-  if (isNaN(noteId)) return {};
+  if (!id) return {};
 
   try {
-    const note = await fetchNoteById(noteId);
+    const note = await fetchNoteById(id);
     const title = `${note.title} - NoteHub`;
     const description = `${note.content.slice(0, 150)}...`;
 
@@ -34,14 +33,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function NotesPage({ params }: Props) {
   const { id } = await params;
 
-  const noteId = Number(id);
-
-  if (isNaN(noteId)) {
+  if (!id) {
     notFound();
   }
 
   try {
-    const note = await fetchNoteById(noteId);
+    const note = await fetchNoteById(id);
     return (
       <div>
         <h1>{note.title}</h1>

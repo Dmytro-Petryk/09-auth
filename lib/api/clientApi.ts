@@ -1,18 +1,19 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-
 import axios from 'axios';
 import { User } from '../../types/user';
 import { Note } from '@/types/note';
+const axiosInstance = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api',
+  withCredentials: true,
+});
 
 export const registerUser = async (
   email: string,
   password: string
 ): Promise<User> => {
-  const { data } = await axios.post<User>(
-    `${BASE_URL}/api/auth/register`,
-    { email, password },
-    { withCredentials: true }
-  );
+  const { data } = await axiosInstance.post<User>('/auth/register', {
+    email,
+    password,
+  });
   return data;
 };
 
@@ -20,7 +21,7 @@ export const loginUser = async (
   email: string,
   password: string
 ): Promise<User> => {
-  const { data } = await axios.post<User>(`${BASE_URL}/api/auth/login`, {
+  const { data } = await axiosInstance.post<User>('/auth/login', {
     email,
     password,
   });
@@ -28,34 +29,25 @@ export const loginUser = async (
 };
 
 export const logoutUser = async (): Promise<void> => {
-  await axiosInstance.post(`${BASE_URL}/api/auth/logout`, null);
+  await axiosInstance.post('/auth/logout');
 };
 
 export const fetchSession = async (): Promise<User | null> => {
-  const { data } = await axiosInstance.get<User>(
-    `${BASE_URL}/api/auth/session`
-  );
+  const { data } = await axiosInstance.get<User>('/auth/session');
   return data || null;
 };
 
 export const updateUser = async (user: Partial<User>): Promise<User> => {
-  const { data } = await axiosInstance.patch<User>(
-    `${BASE_URL}/api/users/me`,
-    user
-  );
+  const { data } = await axiosInstance.patch<User>('/users/me', user);
   return data;
 };
 
 export const deleteNote = async (id: string): Promise<Note> => {
-  const { data } = await axiosInstance.delete<Note>(
-    `${BASE_URL}/api/notes/${id}`
-  );
+  const { data } = await axiosInstance.delete<Note>(`/notes/${id}`);
   return data;
 };
 
 interface NotesResponse {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any;
   notes: Note[];
   totalPages: number;
 }
@@ -71,34 +63,30 @@ export const fetchNotes = async (
   tag?: string,
   search = ''
 ): Promise<NotesResponse> => {
-  try {
-    const params: FetchParams = {};
-    if (typeof page === 'number' && page > 0) {
-      params.page = page;
-    }
-    const trimmedSearch = typeof search === 'string' ? search.trim() : '';
-    if (trimmedSearch) {
-      params.search = trimmedSearch;
-    }
-    if (tag && tag !== 'All') {
-      params.tag = tag;
-    }
+  const token =
+    typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
 
-    const res = await axiosInstance.get<NotesResponse>(
-      `${BASE_URL}/api/notes`,
-      {
-        params,
-      }
-    );
-    return res.data;
-  } catch (error) {
-    console.error('Failed to fetch notes:', error);
-    throw Error('Could not fetch notes.');
+  const params: FetchParams = {};
+  if (typeof page === 'number' && page > 0) {
+    params.page = page;
   }
+  const trimmedSearch = typeof search === 'string' ? search.trim() : '';
+  if (trimmedSearch) {
+    params.search = trimmedSearch;
+  }
+  if (tag && tag !== 'All') {
+    params.tag = tag;
+  }
+
+  const res = await axiosInstance.get<NotesResponse>('/notes', {
+    params,
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  });
+  return res.data;
 };
 
-export const fetchNoteById = async (id: number): Promise<Note> => {
-  const { data } = await axiosInstance.get<Note>(`${BASE_URL}/api/notes/${id}`);
+export const fetchNoteById = async (id: string): Promise<Note> => {
+  const { data } = await axiosInstance.get<Note>(`/notes/${id}`);
   return data;
 };
 
@@ -109,25 +97,35 @@ interface CreateNotePayload {
 }
 
 export const createNote = async (note: CreateNotePayload): Promise<Note> => {
-  const { data } = await axiosInstance.post<Note>(
-    `${BASE_URL}/api/notes`,
-    note
-  );
+  const { data } = await axiosInstance.post<Note>('/notes', note);
   return data;
 };
-const axiosInstance = axios.create({
-  withCredentials: true,
-});
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-let token: string | null = null;
+interface SessionResponse {
+  accessToken: string;
+  refreshToken: string;
+}
 
-export const setAuthToken = (newToken: string | null) => {
-  token = newToken;
-  if (newToken) {
-    axiosInstance.defaults.headers.common['Authorization'] =
-      `Bearer ${newToken}`;
-  } else {
-    delete axiosInstance.defaults.headers.common['Authorization'];
+export const checkSession = async (
+  refreshToken?: string | null
+): Promise<SessionResponse | null> => {
+  if (!refreshToken) {
+    return null;
+  }
+  try {
+    const { data } = await axiosInstance.post<SessionResponse>(
+      '/auth/refresh',
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${refreshToken}`,
+        },
+        withCredentials: true,
+      }
+    );
+    return data;
+  } catch (error) {
+    console.error('Failed to refresh session', error);
+    return null;
   }
 };

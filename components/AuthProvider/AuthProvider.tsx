@@ -1,8 +1,7 @@
 'use client';
 import React, { ReactNode, useEffect, useState } from 'react';
-import { fetchSession, setAuthToken } from '@/lib/api/clientApi';
+import { fetchSession } from '@/lib/api/clientApi';
 import { useAuthStore } from '@/lib/store/authStore';
-import { useRouter } from 'next/navigation';
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -10,9 +9,7 @@ interface AuthProviderProps {
 
 const AuthProvider = ({ children }: AuthProviderProps) => {
   const setUser = useAuthStore((state) => state.setUser);
-  const clearIsAuthenticated = useAuthStore(
-    (state) => state.clearIsAuthenticated
-  );
+  const clearAuth = useAuthStore((state) => state.clearAuth);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,21 +18,18 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         const user = await fetchSession();
         if (user) {
           setUser(user);
-          setAuthToken(user.token);
         } else {
-          clearIsAuthenticated();
-          setAuthToken(null);
+          clearAuth();
         }
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
-        clearIsAuthenticated();
-        setAuthToken(null);
+        clearAuth();
       } finally {
         setLoading(false);
       }
     }
     checkSession();
-  }, [setUser, clearIsAuthenticated]);
+  }, [setUser, clearAuth]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -43,18 +37,4 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
   return <>{children}</>;
 };
-export function ViewNotesButton() {
-  const router = useRouter();
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-
-  const handleClick = () => {
-    if (isAuthenticated) {
-      router.push('/notes'); // якщо авторизований — на нотатки
-    } else {
-      router.push('/sign-in'); // якщо ні — на сторінку входу
-    }
-  };
-
-  return <button onClick={handleClick}>Подивитись нотатки</button>;
-}
 export { AuthProvider };

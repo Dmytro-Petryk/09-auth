@@ -18,7 +18,10 @@ export default function ProfilePage() {
         </div>
         <div className={css.avatarWrapper}>
           <Image
-            src={user?.avatarUrl || '/default-avatar.png'}
+            src={
+              user?.avatarUrl ||
+              'https://ac.goit.global/fullstack/react/default-avatar.jpg'
+            }
             alt="User Avatar"
             width={120}
             height={120}
