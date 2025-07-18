@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { cookies } from 'next/headers';
 
-export function middleware(request: NextRequest) {
-  const token =
-    request.cookies.get('next-auth.session-token')?.value ||
-    request.cookies.get('__Secure-next-auth.session-token')?.value;
+export async function middleware(request: NextRequest) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('accessToken')?.value;
 
   const { pathname } = request.nextUrl;
 

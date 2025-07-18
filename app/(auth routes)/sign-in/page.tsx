@@ -20,6 +20,8 @@ export default function SignIn() {
     try {
       const user = await loginUser(email, password);
       setUser(user);
+      console.log('Login successful, user:', user);
+      console.log('Document cookie at login:', document.cookie);
       router.push(callbackUrl);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
