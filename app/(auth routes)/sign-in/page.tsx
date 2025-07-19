@@ -10,28 +10,25 @@ export default function SignIn() {
   const setUser = useAuthStore((s) => s.setUser);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/notes';
+  const callbackUrl = searchParams.get('callbackUrl') || '/notes/filter/All';
 
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const form = e.target as HTMLFormElement;
-    const email = form.email.value;
-    const password = form.password.value;
+  async function action(formData: FormData) {
+    const email = formData.get('email')?.toString() || '';
+    const password = formData.get('password')?.toString() || '';
+
     try {
-      const user = await loginUser(email, password);
+      const user = await loginUser({ email, password });
       setUser(user);
-      console.log('Login successful, user:', user);
-      console.log('Document cookie at login:', document.cookie);
       router.push(callbackUrl);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(err.response?.data?.message || 'Error');
     }
-  };
+  }
 
   return (
     <main className={css.mainContent}>
-      <form className={css.form} onSubmit={onSubmit}>
+      <form className={css.form} action={action}>
         <h1 className={css.formTitle}>Sign in</h1>
         <div className={css.formGroup}>
           <label htmlFor="email">Email</label>

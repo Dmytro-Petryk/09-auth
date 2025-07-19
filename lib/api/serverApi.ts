@@ -1,12 +1,7 @@
 import { cookies } from 'next/headers';
 import { Note } from '@/types/note';
 import { User } from '@/types/user';
-import axios from 'axios';
-
-const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api',
-  withCredentials: true,
-});
+import axiosInstance from '@/lib/api/api';
 
 export interface NotesResponse {
   notes: Note[];
@@ -48,7 +43,8 @@ export const fetchNoteByIdServer = async (id: string): Promise<Note> => {
   return response.data;
 };
 
-export const fetchSessionServer = async (): Promise<User | null> => {
+import type { AxiosResponse } from 'axios';
+export const fetchSessionServer = async (): Promise<AxiosResponse<User>> => {
   const cookieStore = cookies();
   const cookieHeader = (await cookieStore)
     .getAll()
@@ -60,7 +56,7 @@ export const fetchSessionServer = async (): Promise<User | null> => {
       cookie: cookieHeader,
     },
   });
-  return response.data || null;
+  return response;
 };
 
 export const fetchCurrentUserServer = async (): Promise<User> => {
@@ -85,3 +81,31 @@ const serverApi = {
 };
 
 export default serverApi;
+interface SessionResponse {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export const checkSession = async (
+  refreshToken?: string | null
+): Promise<SessionResponse | null> => {
+  if (!refreshToken) {
+    return null;
+  }
+  try {
+    const { data } = await axiosInstance.post<SessionResponse>(
+      '/auth/refresh',
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${refreshToken}`,
+        },
+        withCredentials: true,
+      }
+    );
+    return data;
+  } catch (error) {
+    console.error('Failed to refresh session', error);
+    return null;
+  }
+};

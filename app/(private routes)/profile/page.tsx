@@ -1,11 +1,16 @@
-'use client';
-import Link from 'next/link';
 import Image from 'next/image';
-import { useAuthStore } from '@/lib/store/noteStore';
+import Link from 'next/link';
+import type { Metadata } from 'next';
+import { fetchCurrentUserServer } from '@/lib/api/serverApi';
 import css from './ProfilePage.module.css';
 
-export default function ProfilePage() {
-  const user = useAuthStore((state) => state.user);
+export const metadata: Metadata = {
+  title: 'Profile Page',
+  description: 'User profile information',
+};
+
+export default async function ProfilePage() {
+  const user = await fetchCurrentUserServer();
 
   return (
     <main className={css.mainContent}>

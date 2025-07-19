@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { cookies } from 'next/headers';
-import { checkSession } from './lib/api/clientApi';
+import { checkSession } from './lib/api/serverApi';
 
 export async function middleware(request: NextRequest) {
   const cookieStore = await cookies();
@@ -20,7 +20,7 @@ export async function middleware(request: NextRequest) {
         const response = NextResponse.next();
         response.cookies.set('accessToken', newSession.accessToken);
         response.cookies.set('refreshToken', newSession.refreshToken);
-        return response;
+        return NextResponse.redirect(new URL(request.nextUrl.pathname, request.url));
       }
     } catch (err) {
       console.error('Failed to refresh session', err);

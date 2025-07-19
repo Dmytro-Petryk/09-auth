@@ -1,40 +1,29 @@
-import axios from 'axios';
 import { User } from '../../types/user';
 import { Note } from '@/types/note';
-const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api',
-  withCredentials: true,
-});
+import axiosInstance from '@/lib/api/api';
+import type { AxiosResponse } from 'axios';
 
-export const registerUser = async (
-  email: string,
-  password: string
-): Promise<User> => {
-  const { data } = await axiosInstance.post<User>('/auth/register', {
-    email,
-    password,
-  });
+export const registerUser = async (credentials: {
+  email: string;
+  password: string;
+}): Promise<User> => {
+  const { data } = await axiosInstance.post<User>(
+    '/auth/register',
+    credentials
+  );
   return data;
 };
 
-export const loginUser = async (
-  email: string,
-  password: string
-): Promise<User> => {
-  const { data } = await axiosInstance.post<User>('/auth/login', {
-    email,
-    password,
-  });
+export const loginUser = async (credentials: {
+  email: string;
+  password: string;
+}): Promise<User> => {
+  const { data } = await axiosInstance.post<User>('/auth/login', credentials);
   return data;
 };
 
 export const logoutUser = async (): Promise<void> => {
   await axiosInstance.post('/auth/logout');
-};
-
-export const fetchSession = async (): Promise<User | null> => {
-  const { data } = await axiosInstance.get<User>('/auth/session');
-  return data || null;
 };
 
 export const updateUser = async (user: Partial<User>): Promise<User> => {
@@ -101,31 +90,16 @@ export const createNote = async (note: CreateNotePayload): Promise<Note> => {
   return data;
 };
 
-interface SessionResponse {
-  accessToken: string;
-  refreshToken: string;
-}
+export const getUserProfile = async (): Promise<User> => {
+  const { data } = await axiosInstance.get<User>('/users/me');
+  return data;
+};
+export const fetchSession = async (): Promise<AxiosResponse<User>> => {
+  console.log('Fetching session with cookie (browser):', document.cookie);
 
-export const checkSession = async (
-  refreshToken?: string | null
-): Promise<SessionResponse | null> => {
-  if (!refreshToken) {
-    return null;
-  }
-  try {
-    const { data } = await axiosInstance.post<SessionResponse>(
-      '/auth/refresh',
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${refreshToken}`,
-        },
-        withCredentials: true,
-      }
-    );
-    return data;
-  } catch (error) {
-    console.error('Failed to refresh session', error);
-    return null;
-  }
+  const response = await axiosInstance.get<User>('/auth/session');
+
+  console.log('Session response status:', response.status);
+
+  return response;
 };

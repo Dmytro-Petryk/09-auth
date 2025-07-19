@@ -2,13 +2,16 @@
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { registerUser } from '@/lib/api/clientApi';
+import { useAuthStore } from '@/lib/store/authStore';
 import css from './SignUpPage.module.css';
 
 export default function SignUp() {
   const [error, setError] = useState('');
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/notes';
+  const callbackUrl = searchParams.get('callbackUrl') || '/notes/filter/All';
+
+  const setUser = useAuthStore((state) => state.setUser);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,7 +19,8 @@ export default function SignUp() {
     const email = form.email.value;
     const password = form.password.value;
     try {
-      await registerUser(email, password);
+      const user = await registerUser({ email, password });
+      setUser(user);
       router.push(callbackUrl);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
